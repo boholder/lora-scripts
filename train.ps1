@@ -1,18 +1,18 @@
 # LoRA train script by @Akegarasu
 
 # Train data path | 设置训练用模型、图片
-$pretrained_model = "./sd-models/model.ckpt" # base model path | 底模路径
-$train_data_dir = "./train/aki" # train dataset path | 训练数据集路径
+$pretrained_model = "..\lora-scripts\sd-models\anything-v4.5-pruned.ckpt" # base model path | 底模路径
+$train_data_dir = "..\lora-scripts\train\maho" # train dataset path | 训练数据集路径
 $reg_data_dir = "" # directory for regularization images | 正则化数据集路径，默认不使用正则化图像。
 
 # Train related params | 训练相关参数
 $resolution = "512,512" # image resolution w,h. 图片分辨率，宽,高。支持非正方形，但必须是 64 倍数。
 $batch_size = 1 # batch size
-$max_train_epoches = 10 # max train epoches | 最大训练 epoch
+$max_train_epoches = 15 # max train epoches | 最大训练 epoch
 $save_every_n_epochs = 2 # save every n epochs | 每 N 个 epoch 保存一次
 
-$network_dim = 32 # network dim | 常用 4~128，不是越大越好
-$network_alpha = 32 # network alpha | 常用与 network_dim 相同的值或者采用较小的值，如 network_dim的一半 防止下溢。默认值为 1，使用较小的 alpha 需要提升学习率。
+$network_dim = 64 # network dim | 常用 4~128，不是越大越好
+$network_alpha = 1 # network alpha | 常用与 network_dim 相同的值或者采用较小的值，如 network_dim的一半 防止下溢。默认值为 1，使用较小的 alpha 需要提升学习率。
 
 $train_unet_only = 0 # train U-Net only | 仅训练 U-Net，开启这个会牺牲效果大幅减少显存使用。6G显存可以开启
 $train_text_encoder_only = 0 # train Text Encoder only | 仅训练 文本编码器
@@ -29,7 +29,7 @@ $lr_warmup_steps = 0 # warmup steps | 仅在 lr_scheduler 为 constant_with_warm
 $lr_restart_cycles = 1 # cosine_with_restarts restart cycles | 余弦退火重启次数，仅在 lr_scheduler 为 cosine_with_restarts 时起效。
 
 # Output settings | 输出设置
-$output_name = "aki" # output model name | 模型保存名称
+$output_name = "himemiyamaho" # output model name | 模型保存名称
 $save_model_as = "safetensors" # model save ext | 模型保存格式 ckpt, pt, safetensors
 
 # 其他设置
@@ -44,9 +44,11 @@ $use_8bit_adam = 1 # use 8bit adam optimizer | 使用 8bit adam 优化器节省�
 $use_lion = 0 # use lion optimizer | 使用 Lion 优化器
 
 # LoCon 训练设置
-$enable_locon_train = 0 # enable LoCon train | 启用 LoCon 训练 启用后 network_dim 和 network_alpha 应当选择较小的值，比如 2~16
+$enable_locon_train = 1 # enable LoCon train | 启用 LoCon 训练 启用后 network_dim 和 network_alpha 应当选择较小的值，比如 2~16
 $conv_dim = 4 # conv dim | 类似于 network_dim，推荐为 4
 $conv_alpha = 4 # conv alpha | 类似于 network_alpha，可以采用与 conv_dim 一致或者更小的值
+$locon_dropout = 0.1
+$locon_algo = "lora"  # lora, loha
 
 # ============= DO NOT MODIFY CONTENTS BELOW | 请勿修改下方内容 =====================
 # Activate python venv
@@ -85,10 +87,12 @@ if ($persistent_data_loader_workers) {
 }
 
 if ($enable_locon_train) {
-  $network_module = "locon.locon_kohya"
+  $network_module = "lycoris.kohya"
   [void]$ext_args.Add("--network_args")
   [void]$ext_args.Add("conv_dim=$conv_dim")
   [void]$ext_args.Add("conv_alpha=$conv_alpha")
+  [void]$ext_args.Add("dropout=$locon_dropout")
+  [void]$ext_args.Add("algo=$locon_algo")
 }
 
 if ($noise_offset) {
