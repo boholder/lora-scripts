@@ -2,7 +2,7 @@
 
 # Train data path | 设置训练用模型、图片
 $pretrained_model = "..\lora-scripts\sd-models\anything-v4.5-pruned.ckpt" # base model path | 底模路径
-$train_data_dir = "..\lora-scripts\train\maho" # train dataset path | 训练数据集路径
+$train_data_dir = "..\lora-scripts\train\himemiyamaho" # train dataset path | 训练数据集路径
 $reg_data_dir = "" # directory for regularization images | 正则化数据集路径，默认不使用正则化图像。
 
 # Train related params | 训练相关参数
